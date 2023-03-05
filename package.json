@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/phyesix/dogusoto#readme",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "nodemailer": "^6.9.1",
     "playwright": "^1.31.2"
   },

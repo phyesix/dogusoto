@@ -27,17 +27,17 @@ async function main() {
 
 async function sendMail(data) {
   const mailData = {
-    from: "node@ibrahimnergiz.com",
-    to: "contact@ibrahimnergiz.com",
+    from: process.env.MAILJET_MAIL,
+    to: "phyesix@gmail.com",
     subject: `AUDI STOK`,
-    text: data.Data,
+    text: data.Message[0],
     html: `
       <div>
           <h1>AUDI STOK</h1>
-          <p>${data}</div>
-      </div>`,
+          <p>${JSON.stringify(data)}</div>
+      </div>`
   };
-
+  console.log("mailData", mailData);
   transporter.sendMail(mailData, function (err, info) {
       console.log("info", info);
       console.log("err", err)
@@ -47,7 +47,8 @@ async function sendMail(data) {
 main()
   .then((response) => response.json())
   .then((json) => {
-    if(json.Data) {
+    console.log("json", json);
+    if(!json.Data) {
       sendMail(json)
     }
   })
