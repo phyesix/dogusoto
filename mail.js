@@ -48,8 +48,11 @@ main()
   .then((response) => response.json())
   .then((json) => {
     console.log("json", json);
-    if(!json.Data) {
+    if(json.Data) {
+      console.log("Sending mail...");
       sendMail(json)
+    } else {
+      console.log(":(");
     }
   })
   .catch(err => {
