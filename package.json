@@ -1,0 +1,25 @@
+{
+  "name": "dogusoto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phyesix/dogusoto.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phyesix/dogusoto/issues"
+  },
+  "homepage": "https://github.com/phyesix/dogusoto#readme",
+  "dependencies": {
+    "nodemailer": "^6.9.1",
+    "playwright": "^1.31.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.31.2"
+  }
+}
