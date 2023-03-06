@@ -95,7 +95,7 @@ app.get('/', (req, res) => {
         sendMail(json);
       } else {
         console.log(":(");
-        res.json({ message: ":( " + json });
+        res.json({ message: ":( " + JSON.stringify(json) });
       }
     })
     .catch(err => {
