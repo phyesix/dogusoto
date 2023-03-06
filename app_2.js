@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const axios = require('axios');
 
 const port = 3000;
 
@@ -23,21 +22,18 @@ const transporter = nodemailer.createTransport({
 });
 
 async function main() {
-  var dataToPost = {
-    modeldes: "Q3 35 Turbo FSI 150 hp Advanced S tronic",
-    modelcode: "F3B"
-  };
-
-  let axiosConfiguration = {
+  const res = await fetch('https://stokarac.audi.com.tr/home/GetModelList4?time=' + Date.now(), {
+    method: 'POST',
+    body: JSON.stringify({
+      modeldes: "Q3 35 Turbo FSI 150 hp Advanced S tronic",
+      modelcode: "F3B"
+    }),
     headers: {
-      'Content-Type': 'application/json;charset=UTF-8',
-      "Access-Control-Allow-Origin": "*",
+      'Content-type': 'application/json; charset=UTF-8',
       'Cache-Control': 'no-cache'
     }
-  };
-
-  const res = await axios.post('https://stokarac.audi.com.tr/home/GetModelList4?time=' + Date.now(), dataToPost, axiosConfiguration)
-  return res.data;
+  });
+  return res
 }
 
 async function sendMail(data) {
@@ -86,6 +82,7 @@ async function sendMail(data) {
 
 app.get('/', (req, res) => {
   main()
+    .then((response) => response.json())
     .then((json) => {
       console.log("json", json);
       // res.json({ message: json });
