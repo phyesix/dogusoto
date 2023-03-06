@@ -89,7 +89,7 @@ app.get('/', (req, res) => {
     .then((json) => {
       console.log("json", json);
       // res.json({ message: json });
-      if(json.Data) {
+      if(json.ResultCode !== 500) {
         console.log("Sending mail...");
         res.json({ message: "STOCK COUNT: " + JSON.stringify(json.Data.length) });
         sendMail(json);
