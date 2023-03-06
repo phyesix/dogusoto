@@ -95,12 +95,12 @@ app.get('/', (req, res) => {
         sendMail(json);
       } else {
         console.log(":(");
-        res.json({ message: ":( " + JSON.stringify(json) });
+        res.json({ message: "500 :( --" + JSON.stringify(json) });
       }
     })
     .catch(err => {
       console.log(err);
-      res.json({ message: "ERR " + err });
+      res.json({ message: "ERR :( --" + err });
     })
 })
 
