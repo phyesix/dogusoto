@@ -68,7 +68,7 @@ async function sendMail(data) {
   const mailData = {
     from: process.env.MAILJET_MAIL,
     to: "phyesix@gmail.com",
-    subject: `AUDI STOCK`,
+    subject: `AUDI STOCK `+ data.Data.length,
     text: data.Message[0] || "AUDI",
     html: `
       <div>
