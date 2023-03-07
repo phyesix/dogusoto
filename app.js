@@ -29,7 +29,7 @@ const transporter = nodemailer.createTransport({
 function sleep(time) { return new Promise(function(resolve) { setTimeout(resolve, time)})}
 
 async function checkDogus() {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
   page.on('console', async (msg) => {
     const msgArgs = msg.args();
