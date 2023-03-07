@@ -3,8 +3,10 @@ const cors = require("cors");
 const app = express();
 const axios = require('axios');
 const playwright = require('playwright');
+const puppeteer = require('puppeteer');
+const fetchN = require('node-fetch');
 
-const port = 3000;
+const port = 3001;
 
 app.use(cors());
 app.use(express.json()); 
@@ -24,63 +26,55 @@ const transporter = nodemailer.createTransport({
     secure: true,
 });
 
-async function checkCar(d) {
-  let cars = [];
-  for (let i = 0; i < d.length; i++) {
-    const car = d[i];
-    for (let a = 0; a < d[i].vehiclereservedealer.length ; a++) {
-      const dealer = d[i].vehiclereservedealer[a];
-      if(dealer.isoptiontocustomer) {
-        cars.push(dealer.dealername);
-      }
-    }
-  }
-  return cars;
-}
+function sleep(time) { return new Promise(function(resolve) { setTimeout(resolve, time)})}
 
 async function checkDogus() {
-  const browser = await playwright.chromium.launch();
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
-  await page.goto('https://www.dogusoto.com.tr/q3-f3b');
-  await page.waitForTimeout(2000);
-  await page.screenshot({ path: './png/page.png' })
-  const getList = await page.evaluate(async () => {
-    return await fetch('https://www.dogusoto.com.tr/api/vehicle/getvehiclelist/q3-f3b', {
-      method: 'POST',
-      body: JSON.stringify({}),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-        'Cache-Control': 'no-cache'
-      }
-    })
-      .then(res => res.clone().json());
+  page.on('console', async (msg) => {
+    const msgArgs = msg.args();
+    for (let i = 0; i < msgArgs.length; ++i) {
+      console.log(await msgArgs[i].jsonValue());
+    }
   });
-  await page.waitForTimeout(2000);
+  
+  await page.goto('https://www.dogusoto.com.tr/q3-f3b');
+  await page.waitForSelector('.reserve.direct-link');
 
-  const carDealers = await checkCar(getList.data);
-  if(carDealers.length > 0) {
+  const storeList = await page.evaluate(async () => {
+    let availableStore = [];
+    //const list = document.querySelectorAll('.reserve.direct-link:not(.ng-hide)');
+    const list = document.querySelectorAll('.reserve.direct-link');
+    for (let a = 0; a < list.length; a++) {
+      const store = list[a].parentElement.innerText;
+      availableStore.push(store)
+    }
+    return availableStore;
+  });
+
+  if(storeList.length > 0) {
     const mailData = {
       from: process.env.MAILJET_MAIL,
       to: "phyesix@gmail.com",
-      subject: `DOGUSOTO AUDI STOCK `+ carDealers.length,
-      text: carDealers[0] || "DOGUSOTO AUDI",
+      subject: `DOGUSOTO AUDI STOCK `+ storeList.length,
+      text: storeList[0] || "DOGUSOTO AUDI",
       html: `
         <div>
           <h1>DOGUSOTO AUDI STOCK</h1>
-          ${carDealers.toString()}
+          ${storeList.toString()}
         </div>`
     };
-    console.log("mailData", mailData);
+
     transporter.sendMail(mailData, function (err, info) {
-        console.log("info", info);
-        console.log("err", err)
+      console.log("info", info);
+      console.log("err", err)
     });
   }
 
   await browser.close();
 }
 
-async function main() {
+async function checkAudi() {
   var dataToPost = {
     modeldes: "Q3 35 Turbo FSI 150 hp Advanced S tronic",
     modelcode: "F3B"
@@ -142,7 +136,7 @@ async function sendMail(data) {
 }
 
 app.get('/audi', (req, res) => {
-  main()
+  checkAudi()
     .then((json) => {
       console.log("json", json);
       // res.json({ message: json });
