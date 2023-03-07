@@ -29,7 +29,7 @@ const transporter = nodemailer.createTransport({
 function sleep(time) { return new Promise(function(resolve) { setTimeout(resolve, time)})}
 
 async function checkDogus() {
-  const browser = await playwright.chromium.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   page.on('console', async (msg) => {
     const msgArgs = msg.args();
@@ -66,13 +66,16 @@ async function checkDogus() {
         </div>`
     };
 
+    console.log("mailData", mailData);
+    return;
+
     transporter.sendMail(mailData, function (err, info) {
       console.log("info", info);
       console.log("err", err)
     });
   }
 
-  await browser.close();
+  // await browser.close();
 }
 
 async function checkAudi() {
