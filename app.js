@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const axios = require('axios');
+const playwright = require('playwright');
 
 const port = 3000;
 
@@ -12,6 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 require("dotenv").config();
 
 let nodemailer = require("nodemailer");
+
 const transporter = nodemailer.createTransport({
     port: 465,
     host: process.env.MAILJET_SMTP_SERVER,
@@ -21,6 +23,62 @@ const transporter = nodemailer.createTransport({
     },
     secure: true,
 });
+
+async function checkCar(d) {
+  let cars = [];
+  for (let i = 0; i < d.length; i++) {
+    const car = d[i];
+    for (let a = 0; a < d[i].vehiclereservedealer.length ; a++) {
+      const dealer = d[i].vehiclereservedealer[a];
+      if(dealer.isoptiontocustomer) {
+        cars.push(dealer.dealername);
+      }
+    }
+  }
+  return cars;
+}
+
+async function checkDogus() {
+  const browser = await playwright.firefox.launch();
+  const page = await browser.newPage();
+  await page.goto('https://www.dogusoto.com.tr/q3-f3b');
+  await page.waitForTimeout(2000);
+  await page.screenshot({ path: './png/page.png' })
+  const getList = await page.evaluate(async () => {
+    return await fetch('https://www.dogusoto.com.tr/api/vehicle/getvehiclelist/q3-f3b', {
+      method: 'POST',
+      body: JSON.stringify({}),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+        'Cache-Control': 'no-cache'
+      }
+    })
+      .then(res => res.clone().json());
+  });
+  await page.waitForTimeout(2000);
+
+  const carDealers = await checkCar(getList.data);
+  if(carDealers.length > 0) {
+    const mailData = {
+      from: process.env.MAILJET_MAIL,
+      to: "phyesix@gmail.com",
+      subject: `DOGUSOTO AUDI STOCK `+ carDealers.length,
+      text: carDealers[0] || "DOGUSOTO AUDI",
+      html: `
+        <div>
+          <h1>DOGUSOTO AUDI STOCK</h1>
+          ${carDealers.toString()}
+        </div>`
+    };
+    console.log("mailData", mailData);
+    transporter.sendMail(mailData, function (err, info) {
+        console.log("info", info);
+        console.log("err", err)
+    });
+  }
+
+  await browser.close();
+}
 
 async function main() {
   var dataToPost = {
@@ -83,8 +141,7 @@ async function sendMail(data) {
   });
 }
 
-
-app.get('/', (req, res) => {
+app.get('/audi', (req, res) => {
   main()
     .then((json) => {
       console.log("json", json);
@@ -102,6 +159,23 @@ app.get('/', (req, res) => {
       console.log(err);
       res.json({ message: "ERR :( --" + err });
     })
+})
+
+app.get('/dogus', (req, res) => {
+  checkDogus()
+    .then((json) => {
+      // console.log("json", JSON.parse(json));
+      // console.log("json stringify", JSON.stringify(json));
+      res.json({ message: "200" + JSON.stringify(json) });
+    })
+    .catch(err => {
+      console.log(err);
+      res.json({ message: "ERR :( --" + err });
+    })
+})
+
+app.get('/*', (req, res) => {
+  res.json({ message: "Hello world"});
 })
 
 app.listen(port, () => {
