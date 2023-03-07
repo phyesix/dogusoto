@@ -39,7 +39,7 @@ async function checkCar(d) {
 }
 
 async function checkDogus() {
-  const browser = await playwright.firefox.launch();
+  const browser = await playwright.chromium.launch();
   const page = await browser.newPage();
   await page.goto('https://www.dogusoto.com.tr/q3-f3b');
   await page.waitForTimeout(2000);
