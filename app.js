@@ -29,7 +29,7 @@ const transporter = nodemailer.createTransport({
 function sleep(time) { return new Promise(function(resolve) { setTimeout(resolve, time)})}
 
 async function checkDogus() {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await playwright.chromium.launch({ headless: false });
   const page = await browser.newPage();
   page.on('console', async (msg) => {
     const msgArgs = msg.args();
@@ -39,8 +39,9 @@ async function checkDogus() {
   });
   
   await page.goto('https://www.dogusoto.com.tr/q3-f3b');
-  await page.waitForSelector('.reserve.direct-link');
-
+  // await page.waitForSelector('.reserve.direct-link');
+  // await page.waitForLoadState('networkidle');
+  await sleep(10000);
   const storeList = await page.evaluate(async () => {
     let availableStore = [];
     //const list = document.querySelectorAll('.reserve.direct-link:not(.ng-hide)');
