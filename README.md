@@ -1,3 +1,3 @@
 doğuş oto
 
-trigger auto deploy 1
+trigger auto deploy 2
