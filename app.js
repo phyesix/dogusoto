@@ -2,9 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const axios = require('axios');
-const playwright = require('playwright');
 const puppeteer = require('puppeteer');
-const fetchN = require('node-fetch');
 
 const port = 3001;
 
@@ -31,21 +29,27 @@ function sleep(time) { return new Promise(function(resolve) { setTimeout(resolve
 async function checkDogus() {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
+  await page.setUserAgent('Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0');
   page.on('console', async (msg) => {
     const msgArgs = msg.args();
     for (let i = 0; i < msgArgs.length; ++i) {
       console.log(await msgArgs[i].jsonValue());
     }
   });
-  
+
   await page.goto('https://www.dogusoto.com.tr/q3-f3b');
   // await page.waitForSelector('.reserve.direct-link');
   // await page.waitForLoadState('networkidle');
-  await sleep(10000);
+  await sleep(5000);
+  await page.screenshot({
+    path: "./png/openPage.png",
+    fullPage: true
+  });
+
   const storeList = await page.evaluate(async () => {
     let availableStore = [];
-    //const list = document.querySelectorAll('.reserve.direct-link:not(.ng-hide)');
-    const list = document.querySelectorAll('.reserve.direct-link');
+    const list = document.querySelectorAll('.reserve.direct-link:not(.ng-hide)');
+    //const list = document.querySelectorAll('.reserve.direct-link');
     for (let a = 0; a < list.length; a++) {
       const store = list[a].parentElement.innerText;
       availableStore.push(store)

@@ -29,6 +29,7 @@ pnpm-lock.yaml
 /playwright-report/
 /playwright/.cache/
 
+package-lock.json
 .env
 sifreler
 sample
