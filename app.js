@@ -129,7 +129,7 @@ async function sendMail(data) {
     from: process.env.MAILJET_MAIL,
     to: "phyesix@gmail.com",
     subject: `AUDI STOCK `+ data.Data.length,
-    text: data.Message[0] || "AUDI",
+    text: data.Message[0] || "AUDI",
     html: `
       <div>
         <h1>AUDI STOCK</h1>
