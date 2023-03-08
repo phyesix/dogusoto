@@ -30,11 +30,8 @@ function sleep(time) { return new Promise(function(resolve) { setTimeout(resolve
 
 async function checkDogus() {
   const browser = await puppeteer.launch({
-    executablePath: '/home/stock.nergiz.org/.cache/puppeteer/chrome/linux-1095492/chrome-linux/chrome',
-    args: [ '--use-gl=egl', '--disable-gpu', '--disable-setuid-sandbox', '--no-sandbox', '--no-zygote', '--disable-dev-shm-usage', '--no-first-run', '--single-process'],
-    ignoreDefaultArgs: ['--disable-extensions'],
-    slowMo: 100,
-    headless: true
+    defaultViewport: {width: 1920, height: 1080},
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
   await page.setUserAgent('Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0');
