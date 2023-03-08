@@ -32,7 +32,7 @@ async function checkDogus() {
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/chromium-browser',
     headless: false,
-    args: [ '--use-gl=egl', '--disable-gpu', '--disable-setuid-sandbox', '--no-sandbox', '--no-zygote' ],
+    args: [ '--use-gl=egl', '--disable-gpu', '--disable-setuid-sandbox', '--no-sandbox', '--no-zygote', '--disable-dev-shm-usage', '--no-first-run', '--single-process'],
     ignoreDefaultArgs: ['--disable-extensions']
   });
   const page = await browser.newPage();
