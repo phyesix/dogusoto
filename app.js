@@ -31,7 +31,8 @@ function sleep(time) { return new Promise(function(resolve) { setTimeout(resolve
 async function checkDogus() {
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/chromium-browser',
-    headless: false,
+    headless: true,
+    args: ['--use-gl=egl'],
     //args: [ '--disable-gpu', '--disable-setuid-sandbox', '--no-sandbox', '--no-zygote' ]
   });
   const page = await browser.newPage();
