@@ -30,7 +30,7 @@ function sleep(time) { return new Promise(function(resolve) { setTimeout(resolve
 
 async function checkDogus() {
   const browser = await puppeteer.launch({
-    executablePath: path.resolve(__dirname,'.cache/puppeteer/chrome/linux-1095492/chrome-linux/chrome'),
+    executablePath: path.resolve(__dirname,'../.cache/puppeteer/chrome/linux-1095492/chrome-linux/chrome'),
     args: ['--no-sandbox']
   });
   const page = await browser.newPage();
