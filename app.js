@@ -150,11 +150,11 @@ app.get('/audi', (req, res) => {
         sendMail(json);
       }
 
-      res.status(200).json({ message: JSON.stringify(json) });
+      res.json({ message: JSON.stringify(json) });
     })
     .catch(err => {
       console.log(err);
-      res.status(200).json({ message: "ERR :( --" + err });
+      res.json({ message: "ERR :( --" + err });
     })
 });
 
@@ -163,16 +163,16 @@ app.get('/dogus', (req, res) => {
     .then((json) => {
       // console.log("json", JSON.parse(json));
       // console.log("json stringify", JSON.stringify(json));
-      res.status(200).json({ message: "200" + JSON.stringify(json) });
+      res.json({ message: "200" + JSON.stringify(json) });
     })
     .catch(err => {
       console.log(err);
-      res.status(200).json({ message: "ERR :( --" + err });
+      res.json({ message: "ERR :( --" + err });
     })
 });
 
 app.get('/*', (req, res) => {
-  res.status(200).json({ message: "Hello world"});
+  res.json({ message: "Hello world"});
 });
 
 app.listen(port, () => {
