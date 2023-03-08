@@ -5,7 +5,7 @@ const app = express();
 const axios = require('axios');
 const puppeteer = require('puppeteer');
 
-const port = 3001;
+const port = 3000;
 
 app.use(cors());
 app.use(express.json()); 
