@@ -28,7 +28,7 @@ const transporter = nodemailer.createTransport({
 function sleep(time) { return new Promise(function(resolve) { setTimeout(resolve, time)})}
 
 async function checkDogus() {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({args: ['--no-sandbox']});
   const page = await browser.newPage();
   await page.setUserAgent('Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0');
   page.on('console', async (msg) => {
