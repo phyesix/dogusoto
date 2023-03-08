@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+
 const axios = require('axios');
 const puppeteer = require('puppeteer');
 
@@ -9,6 +10,7 @@ const port = 3001;
 app.use(cors());
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
+app.setTimeout(500000);
 
 require("dotenv").config();
 
@@ -70,16 +72,13 @@ async function checkDogus() {
         </div>`
     };
 
-    console.log("mailData", mailData);
-    return;
-
     transporter.sendMail(mailData, function (err, info) {
       console.log("info", info);
       console.log("err", err)
     });
   }
 
-  // await browser.close();
+  await browser.close();
 }
 
 async function checkAudi() {
@@ -147,21 +146,18 @@ app.get('/audi', (req, res) => {
   checkAudi()
     .then((json) => {
       console.log("json", json);
-      // res.json({ message: json });
+      
       if(json.ResultCode !== 500) {
-        console.log("Sending mail...");
-        res.status(200).json({ message: "STOCK COUNT: " + JSON.stringify(json.Data.length) });
         sendMail(json);
-      } else {
-        console.log(":(");
-        res.status(200).json({ message: "500 :( --" + JSON.stringify(json) });
       }
+
+      res.status(200).json({ message: JSON.stringify(json) });
     })
     .catch(err => {
       console.log(err);
       res.status(200).json({ message: "ERR :( --" + err });
     })
-})
+});
 
 app.get('/dogus', (req, res) => {
   checkDogus()
@@ -174,12 +170,12 @@ app.get('/dogus', (req, res) => {
       console.log(err);
       res.status(200).json({ message: "ERR :( --" + err });
     })
-})
+});
 
 app.get('/*', (req, res) => {
   res.status(200).json({ message: "Hello world"});
-})
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
-})
+});
