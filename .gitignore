@@ -33,3 +33,4 @@ package-lock.json
 .env
 sifreler
 sample
+png/*
