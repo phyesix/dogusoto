@@ -150,16 +150,16 @@ app.get('/audi', (req, res) => {
       // res.json({ message: json });
       if(json.ResultCode !== 500) {
         console.log("Sending mail...");
-        res.json({ message: "STOCK COUNT: " + JSON.stringify(json.Data.length) });
+        res.status(200).json({ message: "STOCK COUNT: " + JSON.stringify(json.Data.length) });
         sendMail(json);
       } else {
         console.log(":(");
-        res.json({ message: "500 :( --" + JSON.stringify(json) });
+        res.status(200).json({ message: "500 :( --" + JSON.stringify(json) });
       }
     })
     .catch(err => {
       console.log(err);
-      res.json({ message: "ERR :( --" + err });
+      res.status(200).json({ message: "ERR :( --" + err });
     })
 })
 
@@ -168,18 +168,18 @@ app.get('/dogus', (req, res) => {
     .then((json) => {
       // console.log("json", JSON.parse(json));
       // console.log("json stringify", JSON.stringify(json));
-      res.json({ message: "200" + JSON.stringify(json) });
+      res.status(200).json({ message: "200" + JSON.stringify(json) });
     })
     .catch(err => {
       console.log(err);
-      res.json({ message: "ERR :( --" + err });
+      res.status(200).json({ message: "ERR :( --" + err });
     })
 })
 
 app.get('/*', (req, res) => {
-  res.json({ message: "Hello world"});
+  res.status(200).json({ message: "Hello world"});
 })
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Example app listening on port ${port}`);
 })
