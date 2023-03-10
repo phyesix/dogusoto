@@ -28,48 +28,54 @@ const transporter = nodemailer.createTransport({
 
 async function checkDogus() {
   const axios = require('axios');
-  axios.get('https://app.scrapingbee.com/api/v1', {
+  var c = Math.floor(Math.random() * 11);
+  const res = await axios.get('https://app.scrapingbee.com/api/v1', {
     params: {
-      'api_key': process.env.SCRAPE_API[Math.floor(Math.random() * 11)],
+      'api_key': process.env['SCRAPE_API_' + c],
       'url': 'https://www.dogusoto.com.tr/q3-f3b', 
       'wait_for': '.reserve.direct-link',
       'premium_proxy': 'true',
       'extract_rules': '{"list":{"selector":"a.item.direct-link","type":"list","output":"html"}}', 
       'country_code':'tr'
     } 
-  }).then((response) => {
-    const carArray = response.list;
-    let avaibleDealers = [];
-    
-    for (let a = 0; a < carArray.length; a++) {
-      let car = carArray[a];
-      if(car.match('reserve direct-link ng-hide') == null) {
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(car, "text/html");
-        var paragraphs = doc.querySelector('.item.direct-link')
-        avaibleDealers.push(paragraphs.firstChild);
-      }
-    }
+  });
 
-    if(avaibleDealers.length > 0) {
-      const mailData = {
-        from: process.env.MAILJET_MAIL,
-        to: "phyesix@gmail.com",
-        subject: `DOGUSOTO AUDI STOCK `+ avaibleDealers.length,
-        text: avaibleDealers[0] || "DOGUSOTO AUDI",
-        html: `
-          <div>
-            <h1>DOGUSOTO AUDI STOCK</h1>
-            ${avaibleDealers.toString()}
-          </div>`
-      };
+  const carArray = res.data.list;
   
-      transporter.sendMail(mailData, function (err, info) {
-        console.log("info", info);
-        console.log("err", err)
-      });
+  let avaibleDealers = [];
+  
+  for (let a = 0; a < carArray.length; a++) {
+    let car = carArray[a];
+    if(car.match('reserve direct-link ng-hide') == null) {
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(car, "text/html");
+      var paragraphs = doc.querySelector('.item.direct-link')
+      avaibleDealers.push(paragraphs.firstChild);
     }
-  })
+  }
+
+  if(avaibleDealers.length > 0) {
+    const mailData = {
+      from: process.env.MAILJET_MAIL,
+      to: "phyesix@gmail.com",
+      subject: `DOGUSOTO AUDI STOCK `+ avaibleDealers.length,
+      text: avaibleDealers[0] || "DOGUSOTO AUDI",
+      html: `
+        <div>
+          <h1>DOGUSOTO AUDI STOCK</h1>
+          ${avaibleDealers.toString()}
+        </div>`
+    };
+
+    transporter.sendMail(mailData, function (err, info) {
+      console.log("info", info);
+      console.log("err", err)
+    });
+
+    return avaibleDealers.toString();
+  } else {
+    return "BULUNAMADI"
+  }
 }
 
 async function checkAudi() {
