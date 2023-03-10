@@ -55,12 +55,12 @@ async function checkDogus() {
       const mailData = {
         from: process.env.MAILJET_MAIL,
         to: "phyesix@gmail.com",
-        subject: `DOGUSOTO AUDI STOCK `+ storeList.length,
-        text: storeList[0] || "DOGUSOTO AUDI",
+        subject: `DOGUSOTO AUDI STOCK `+ avaibleDealers.length,
+        text: avaibleDealers[0] || "DOGUSOTO AUDI",
         html: `
           <div>
             <h1>DOGUSOTO AUDI STOCK</h1>
-            ${storeList.toString()}
+            ${avaibleDealers.toString()}
           </div>`
       };
   
