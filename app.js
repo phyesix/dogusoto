@@ -26,62 +26,50 @@ const transporter = nodemailer.createTransport({
     secure: true,
 });
 
-function sleep(time) { return new Promise(function(resolve) { setTimeout(resolve, time)})}
-
 async function checkDogus() {
-  const browser = await puppeteer.launch({
-    defaultViewport: {width: 1920, height: 1080},
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
-  const page = await browser.newPage();
-  await page.setUserAgent('Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0');
-  page.on('console', async (msg) => {
-    const msgArgs = msg.args();
-    for (let i = 0; i < msgArgs.length; ++i) {
-      console.log(await msgArgs[i].jsonValue());
+  const axios = require('axios');
+  axios.get('https://app.scrapingbee.com/api/v1', {
+    params: {
+      'api_key': process.env.SCRAPE_API[Math.floor(Math.random() * 11)],
+      'url': 'https://www.dogusoto.com.tr/q3-f3b', 
+      'wait_for': '.reserve.direct-link',
+      'premium_proxy': 'true',
+      'extract_rules': '{"list":{"selector":"a.item.direct-link","type":"list","output":"html"}}', 
+      'country_code':'tr'
+    } 
+  }).then((response) => {
+    const carArray = response.list;
+    let avaibleDealers = [];
+    
+    for (let a = 0; a < carArray.length; a++) {
+      let car = carArray[a];
+      if(car.match('reserve direct-link ng-hide') == null) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(car, "text/html");
+        var paragraphs = doc.querySelector('.item.direct-link')
+        avaibleDealers.push(paragraphs.firstChild);
+      }
     }
-  });
 
-  await page.goto('https://www.dogusoto.com.tr/q3-f3b');
-  // await page.waitForSelector('.reserve.direct-link');
-  // await page.waitForLoadState('networkidle');
-  await sleep(5000);
-  await page.screenshot({
-    path: "./png/openPage.png",
-    fullPage: true
-  });
-
-  const storeList = await page.evaluate(async () => {
-    let availableStore = [];
-    const list = document.querySelectorAll('.reserve.direct-link:not(.ng-hide)');
-    //const list = document.querySelectorAll('.reserve.direct-link');
-    for (let a = 0; a < list.length; a++) {
-      const store = list[a].parentElement.innerText;
-      availableStore.push(store)
+    if(avaibleDealers.length > 0) {
+      const mailData = {
+        from: process.env.MAILJET_MAIL,
+        to: "phyesix@gmail.com",
+        subject: `DOGUSOTO AUDI STOCK `+ storeList.length,
+        text: storeList[0] || "DOGUSOTO AUDI",
+        html: `
+          <div>
+            <h1>DOGUSOTO AUDI STOCK</h1>
+            ${storeList.toString()}
+          </div>`
+      };
+  
+      transporter.sendMail(mailData, function (err, info) {
+        console.log("info", info);
+        console.log("err", err)
+      });
     }
-    return availableStore;
-  });
-
-  if(storeList.length > 0) {
-    const mailData = {
-      from: process.env.MAILJET_MAIL,
-      to: "phyesix@gmail.com",
-      subject: `DOGUSOTO AUDI STOCK `+ storeList.length,
-      text: storeList[0] || "DOGUSOTO AUDI",
-      html: `
-        <div>
-          <h1>DOGUSOTO AUDI STOCK</h1>
-          ${storeList.toString()}
-        </div>`
-    };
-
-    transporter.sendMail(mailData, function (err, info) {
-      console.log("info", info);
-      console.log("err", err)
-    });
-  }
-
-  await browser.close();
+  })
 }
 
 async function checkAudi() {
@@ -165,8 +153,6 @@ app.get('/audi', (req, res) => {
 app.get('/dogus', (req, res) => {
   checkDogus()
     .then((json) => {
-      // console.log("json", JSON.parse(json));
-      // console.log("json stringify", JSON.stringify(json));
       res.json({ message: "200" + JSON.stringify(json) });
     })
     .catch(err => {
