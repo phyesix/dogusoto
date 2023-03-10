@@ -74,6 +74,24 @@ async function checkDogus() {
 
     return avaibleDealers.toString();
   } else {
+
+    const mailData = {
+      from: process.env.MAILJET_MAIL,
+      to: "phyesix@gmail.com",
+      subject: `DOGUSOTO AUDI STOCK YOK`,
+      text: "DOGUSOTO AUDI",
+      html: `
+        <div>
+          <h1>DOGUSOTO AUDI STOCK</h1>
+          <p>Stok halen yok.</p>
+        </div>`
+    };
+
+    transporter.sendMail(mailData, function (err, info) {
+      console.log("info", info);
+      console.log("err", err)
+    });
+
     return "BULUNAMADI"
   }
 }
